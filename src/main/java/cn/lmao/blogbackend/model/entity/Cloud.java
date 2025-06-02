@@ -1,0 +1,44 @@
+package cn.lmao.blogbackend.model.entity;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "cloud")
+public class Cloud {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cloud_id", nullable = false, columnDefinition = "BIGINT")
+    private Long id;
+    //已使用空间
+    @Column(name = "used_capacity", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long usedCapacity = 0L;
+
+    @Column(name = "total_capacity", nullable = false, columnDefinition = "BIGINT DEFAULT 10485760")
+    private Long totalCapacity = 10 * 1024 * 1024L;
+
+    @Column(name = "is_admin", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean isAdmin = false;
+
+    @OneToMany(mappedBy = "cloud", orphanRemoval = true)
+    @JsonManagedReference // 防止序列化递归
+    private List<File> files = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
+
+}

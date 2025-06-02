@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lmao-cloud</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<div class="container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-cloud"></i>
+                <span>lmao-cloud</span>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-folder"></i>
+                <span>我的文件</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-image"></i>
+                <span>图片</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-music"></i>
+                <span>音乐</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-video"></i>
+                <span>视频</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-file-alt"></i>
+                <span>文档</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-share-alt"></i>
+                <span>共享</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-trash"></i>
+                <span>回收站</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>设置</span>
+            </a>
+        </div>
+
+        <div class="storage-info">
+            <h3>
+                <span>存储空间</span>
+                <span>65%</span>
+            </h3>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            <div class="storage-details">
+                <span>已用 6.5GB</span>
+                <span>共 10GB</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title">
+                <h1>我的文件</h1>
+            </div>
+
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="搜索文件、文件夹...">
+            </div>
+
+            <div class="user-menu">
+                <div class="notification">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-avatar">张</div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary">
+                <i class="fas fa-upload"></i>
+                上传文件
+            </button>
+            <button class="btn btn-outline">
+                <i class="fas fa-folder-plus"></i>
+                新建文件夹
+            </button>
+            <button class="btn btn-outline">
+                <i class="fas fa-share-alt"></i>
+                共享
+            </button>
+            <button class="btn btn-outline btn-more">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+        </div>
+
+        <div class="files-container">
+            <div class="files-header">
+                <div class="files-filter">
+                    <i class="fas fa-sort-amount-down"></i>
+                    <span>最近修改</span>
+                </div>
+
+                <div class="view-options">
+                    <div class="view-option active">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <div class="view-option">
+                        <i class="fas fa-list"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-list">
+                <!-- 文件项 -->
+                <div class="file-item">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">工作文档</div>
+                        <div class="file-meta">
+                            <span class="file-size">15项</span>
+                            <span class="file-date">今天</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-item">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">个人照片</div>
+                        <div class="file-meta">
+                            <span class="file-size">128项</span>
+                            <span class="file-date">昨天</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-item">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">项目报告.pdf</div>
+                        <div class="file-meta">
+                            <span class="file-size">2.4MB</span>
+                            <span class="file-date">2023-06-15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-item selected">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <img src="https://images.unsplash.com/photo-1682686581362-796145f0e123?w=500&auto=format&fit=crop&q=60"
+                             alt="图片">
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">风景.jpg</div>
+                        <div class="file-meta">
+                            <span class="file-size">3.2MB</span>
+                            <span class="file-date">2023-06-10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-item">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">财务数据.xlsx</div>
+                        <div class="file-meta">
+                            <span class="file-size">1.8MB</span>
+                            <span class="file-date">2023-06-08</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-item">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <i class="fas fa-file-video"></i>
+                        <div class="file-badge">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">会议记录.mp4</div>
+                        <div class="file-meta">
+                            <span class="file-size">156MB</span>
+                            <span class="file-date">2023-06-05</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-item">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">合同模板.docx</div>
+                        <div class="file-meta">
+                            <span class="file-size">850KB</span>
+                            <span class="file-date">2023-06-01</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-item">
+                    <div class="file-actions">
+                        <button class="file-action">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    <div class="file-icon">
+                        <i class="fas fa-file-archive"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">资源包.zip</div>
+                        <div class="file-meta">
+                            <span class="file-size">45.6MB</span>
+                            <span class="file-date">2023-05-28</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/index.js"></script>
+</body>
+</html>
