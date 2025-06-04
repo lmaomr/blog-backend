@@ -142,7 +142,7 @@ public class UserService implements UserDetailsService {
 
     //更新用户
     public void updateUser(User user) {
-        log.debug("开始更新用户: {}", user.getUsername());
+        log.debug("开始更新用户: {}", passwordEncoder.encode(user.getUsername()));
         userRepository.save(user);
         log.info("成功更新用户: {}", user.getUsername());
     }
