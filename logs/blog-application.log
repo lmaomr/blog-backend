@@ -11990,3 +11990,11 @@ org.springframework.security.authentication.BadCredentialsException: Bad credent
 2025-06-04 16:41:02.254 [http-nio-8081-exec-2] DEBUG cn.lmao.blogbackend.util.JwtUtils - JWT令牌生成成功
 2025-06-04 16:41:07.926 [http-nio-8081-exec-4] WARN  c.l.b.e.GlobalExceptionHandler - 认证失败
 2025-06-04 16:41:07.927 [http-nio-8081-exec-4] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-06-04 16:41:22.416 [http-nio-8081-exec-3] DEBUG cn.lmao.blogbackend.util.JwtUtils - 开始为用户[min]生成JWT令牌
+2025-06-04 16:41:22.416 [http-nio-8081-exec-3] DEBUG cn.lmao.blogbackend.util.JwtUtils - 令牌生成时间: Wed Jun 04 16:41:22 CST 2025, 过期时间: Wed Jun 04 20:41:22 CST 2025
+2025-06-04 16:41:22.417 [http-nio-8081-exec-3] DEBUG cn.lmao.blogbackend.util.JwtUtils - JWT令牌生成成功
+2025-06-04 16:41:26.884 [http-nio-8081-exec-5] DEBUG cn.lmao.blogbackend.util.JwtUtils - 开始为用户[lmao]生成JWT令牌
+2025-06-04 16:41:26.884 [http-nio-8081-exec-5] DEBUG cn.lmao.blogbackend.util.JwtUtils - 令牌生成时间: Wed Jun 04 16:41:26 CST 2025, 过期时间: Wed Jun 04 20:41:26 CST 2025
+2025-06-04 16:41:26.884 [http-nio-8081-exec-5] DEBUG cn.lmao.blogbackend.util.JwtUtils - JWT令牌生成成功
+2025-06-04 16:41:30.813 [http-nio-8081-exec-6] WARN  c.l.b.e.GlobalExceptionHandler - 认证失败
+2025-06-04 16:41:30.814 [http-nio-8081-exec-6] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
