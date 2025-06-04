@@ -1,7 +1,7 @@
 package cn.lmao.blogbackend.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class Cloud {
     private Boolean isAdmin = false;
 
     @OneToMany(mappedBy = "cloud", orphanRemoval = true)
-    @JsonManagedReference // 防止序列化递归
+    @JsonIgnore  // 避免序列化时出现懒加载问题
     private List<File> files = new ArrayList<>();
 
     @OneToOne

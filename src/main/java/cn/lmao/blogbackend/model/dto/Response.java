@@ -1,5 +1,6 @@
 package cn.lmao.blogbackend.model.dto;
 
+import cn.lmao.blogbackend.model.enums.ExceptionCodeMsg;
 import lombok.Getter;
 
 /**
@@ -49,6 +50,10 @@ public class Response<T> {
 
     public static <T> Builder<T> builder() {
         return new Builder<>();
+    }
+
+    public static <T> Response<T> exception(ExceptionCodeMsg e) {
+        return new Response<>(e.getCode(), e.getMsg(), null);
     }
 
     public static <T> Response<T> success() {

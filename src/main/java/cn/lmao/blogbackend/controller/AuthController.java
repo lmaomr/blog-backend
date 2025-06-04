@@ -29,6 +29,7 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "登录成功"),
         @ApiResponse(responseCode = "401", description = "认证失败")
     })
+    
     @PostMapping("/login")
     public Response<String> login(
         @Parameter(description = "登录信息", required = true)

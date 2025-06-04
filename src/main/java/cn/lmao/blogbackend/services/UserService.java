@@ -6,9 +6,19 @@ import cn.lmao.blogbackend.model.enums.ExceptionCodeMsg;
 import cn.lmao.blogbackend.repository.UserRepository;
 import cn.lmao.blogbackend.util.LogUtils;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.Collections;
 
 /**
  * 用户服务类
@@ -16,11 +26,25 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final Logger log = LogUtils.getLogger();
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(ExceptionCodeMsg.USER_NOT_FOUND.getMsg());
+        }
+        
+        return new org.springframework.security.core.userdetails.User(
+            user.getUsername(),
+            user.getPassword(),
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+    }
 
     /**
      * 根据用户ID获取用户信息
@@ -82,13 +106,13 @@ public class UserService {
         // 检查用户名是否已存在
         if (getUserByName(user.getUsername()) != null) {
             log.warn("用户名[{}]已存在，注册失败", user.getUsername());
-            throw new CustomException(ExceptionCodeMsg.USERNAME_ALREADY_EXISTS);
+            throw new CustomException(ExceptionCodeMsg.USERNAME_EXISTS);
         }
         
         // 检查邮箱是否已存在
         if (getUserByEmail(user.getEmail()) != null) {
             log.warn("邮箱[{}]已被注册，注册失败", user.getEmail());
-            throw new CustomException(ExceptionCodeMsg.EMAIL_ALREADY_EXISTS);
+            throw new CustomException(ExceptionCodeMsg.EMAIL_EXISTS);
         }
         
         // 加密密码
@@ -99,5 +123,27 @@ public class UserService {
         log.info("用户[{}]注册成功", savedUser.getUsername());
         
         return savedUser;
+    }
+
+    //查询所有用户
+    public List<User> getAllUsers() {
+        log.debug("开始查询所有用户");
+        List<User> users = userRepository.findAll();
+        log.debug("查询到[{}]个用户", users.size());
+        return users;
+    }
+
+    //注销用户
+    public void deleteUser(Long userId) {
+        log.debug("开始注销用户ID: {}", userId);
+        userRepository.deleteById(userId);
+        log.info("成功注销用户ID: {}", userId);
+    }
+
+    //更新用户
+    public void updateUser(User user) {
+        log.debug("开始更新用户: {}", user.getUsername());
+        userRepository.save(user);
+        log.info("成功更新用户: {}", user.getUsername());
     }
 }

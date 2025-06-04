@@ -1,6 +1,7 @@
 package cn.lmao.blogbackend.exception;
 
 import cn.lmao.blogbackend.model.dto.Response;
+import cn.lmao.blogbackend.model.enums.ExceptionCodeMsg;
 import cn.lmao.blogbackend.util.LogUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,6 +21,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
+
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * 全局异常处理器
@@ -53,7 +57,7 @@ public class GlobalExceptionHandler {
     public <T> Response<T> handleNoHandlerFoundException(NoResourceFoundException e, HttpServletRequest request) {
         log.warn("资源不存在 [traceId={}]: method={}, uri={}",
                 getTraceId(request), request.getMethod(), request.getRequestURI());
-        return Response.error(HttpStatus.NOT_FOUND.value(), "请求的资源不存在");
+        return Response.exception(ExceptionCodeMsg.RESOURCE_NOT_FOUND);
     }
 
     /**
@@ -159,13 +163,20 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException e, HttpServletRequest request) {
 
         log.warn("请求体不可读 [traceId={}]: {}", getTraceId(request), e.getMessage());
-        return Response.error(HttpStatus.BAD_REQUEST.value(), "请求体格式错误或不可读");
+        return Response.exception(ExceptionCodeMsg.REQUEST_BODY_INVALID);
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public Response<?> handleOptimisticLockingFailure(ObjectOptimisticLockingFailureException ex) {
         log.warn("乐观锁冲突: {}", ex.getMessage());
-        return Response.error(409, "操作冲突，请稍后重试");
+        return Response.exception(ExceptionCodeMsg.OPTIMISTIC_LOCK_CONFLICT);
+    }
+
+    @ExceptionHandler(AuthenticationException.class) // 捕获所有认证异常
+    public <T> Response<T> handleAuthException(AuthenticationException e) {
+        log.warn("认证失败");
+        return Response.exception(e instanceof BadCredentialsException ? ExceptionCodeMsg.BAD_CREDENTIALS
+                : ExceptionCodeMsg.AUTH_FAIL);
     }
 
     /**
@@ -175,7 +186,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public <T> Response<T> handleAllException(Exception e, HttpServletRequest request) {
         log.error("系统异常 [traceId={}]: {}", getTraceId(request), e.getMessage(), e);
-        return Response.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务器内部错误");
+        return Response.exception(ExceptionCodeMsg.INTERNAL_ERROR);
     }
 
     // --- 工具方法 ---
@@ -191,7 +202,8 @@ public class GlobalExceptionHandler {
      * 敏感信息脱敏处理
      */
     private String sanitize(String input) {
-        if (input == null) return null;
+        if (input == null)
+            return null;
         // 手机号脱敏
         input = input.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
         // 邮箱脱敏

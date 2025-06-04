@@ -11,6 +11,9 @@ import cn.lmao.blogbackend.util.LogUtils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,13 +41,13 @@ public class TestController {
         logger.debug("收到测试请求，参数name: {}", name);
         
         if (name == null || name.isEmpty()) {
-            logger.warn("测试请求失败：用户名为空");
+            // logger.warn("测试请求失败：用户名为空");
             throw new CustomException(404, "用户为空");
         }
         
         if (!name.equals("lmao")) {
             logger.warn("测试请求失败：用户名[{}]不存在", name);
-            throw new CustomException(ExceptionCodeMsg.USER_NOT_EXISTS);
+            throw new CustomException(ExceptionCodeMsg.USERNAME_EXISTS);
         }
         
         logger.info("测试请求成功：用户[{}]验证通过", name);
@@ -58,15 +61,26 @@ public class TestController {
      */
     @GetMapping("/cloud")
     public Response<Cloud> getCloudByUserId(Long id) {
-        logger.debug("收到获取云盘请求，用户ID: {}", id);
-        
-        Cloud cloud = cloudService.getCloudByUserId(id);
-        if (cloud == null) {
-            logger.warn("获取云盘失败：用户ID[{}]的云盘不存在", id);
-            throw new CustomException(ExceptionCodeMsg.CLOUD_NOT_EXISTS);
+        if (id == null) {
+            logger.warn("获取云盘失败：用户ID为空");
+            throw new CustomException(ExceptionCodeMsg.CLOUD_NOT_FOUND);
         }
         
-        logger.info("成功获取用户ID[{}]的云盘信息", id);
+        User user = userService.getUserById(id);
+        if (user == null) {
+            logger.warn("获取云盘失败：用户不存在");
+            throw new CustomException(ExceptionCodeMsg.CLOUD_NOT_FOUND);
+        }
+
+        logger.debug("收到获取云盘请求，用户: {}", user.getUsername());
+        Cloud cloud = cloudService.getCloudByUser(user);
+
+        if (cloud == null) {
+            logger.warn("用户[{}]的云盘不存在", user.getUsername());
+            throw new CustomException(ExceptionCodeMsg.CLOUD_NOT_FOUND);
+        }
+        
+        logger.info("成功获取用户[{}]的云盘信息, 云盘信息: {}", user.getUsername(), cloud);
         return Response.success(cloud);
     }
 
@@ -89,10 +103,34 @@ public class TestController {
         return Response.success(newUser);
     }
 
+    //根据用户名获取用户信息
     @GetMapping("/get")
     public Response<User> findUserById(String username) {
-        if (username == null) throw new CustomException(ExceptionCodeMsg.PARAM_VERIFY_FAIL);
+        if (username == null) throw new CustomException(ExceptionCodeMsg.USERNAME_EXISTS);
         return Response.success(userService.getUserByName(username));
+    }
+
+    @GetMapping("/all")
+    public Response<List<User>> getAllUsers() {
+        return Response.success(userService.getAllUsers());
+    }
+
+    @DeleteMapping("/delete")
+    public Response<String> deleteUser(Long id) {
+        userService.deleteUser(id);
+        return Response.success("注销成功");
+    }
+
+    @PutMapping("/update")
+    public Response<String> updateUser(@RequestBody @Valid User user) {
+        userService.updateUser(user);
+        return Response.success("更新成功");
+    }
+
+    @GetMapping("/cloud/delete")
+    public Response<String> deleteCloud(Long id) {
+        cloudService.deleteCloud(id);
+        return Response.success("注销成功");
     }
 
 }

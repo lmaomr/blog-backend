@@ -26,7 +26,7 @@ spring:
   # JPA 配置
   jpa:
     open-in-view: false
-    show-sql: true  # 是否显示 SQL 语句
+    show-sql: false  # 是否显示 SQL 语句
     hibernate:
       ddl-auto: update  # 自动建表策略，可选值：none、validate、update、create、create-drop
     properties:

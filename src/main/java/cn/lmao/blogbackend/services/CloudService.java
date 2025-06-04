@@ -26,13 +26,13 @@ public class CloudService {
      * @param userId 用户ID
      * @return 云盘信息，如果不存在返回null
      */
-    public Cloud getCloudByUserId(Long userId) {
-        log.debug("正在查询用户ID[{}]的云盘信息", userId);
-        Cloud cloud = cloudRepository.getCloudByUserId(userId);
+    public Cloud getCloudByUser(User user) {
+        log.debug("正在查询用户[{}]的云盘信息", user.getUsername());
+        Cloud cloud = cloudRepository.getCloudByUser(user);
         if (cloud == null) {
-            log.debug("用户ID[{}]的云盘不存在", userId);
+            log.debug("用户[{}]的云盘不存在", user.getUsername());
         } else {
-            log.debug("成功获取用户ID[{}]的云盘信息", userId);
+            log.debug("成功获取用户[{}]的云盘信息", user.getUsername());
         }
         return cloud;
     }
@@ -46,15 +46,22 @@ public class CloudService {
         log.debug("开始为用户[{}]创建云盘", user.getUsername());
         
         //判断该用户云盘是否存在
-        if (getCloudByUserId(user.getId()) != null) {
+        if (getCloudByUser(user) != null) {
             log.warn("用户[{}]的云盘已存在，创建失败", user.getUsername());
             throw new CustomException(ExceptionCodeMsg.CLOUD_ALREADY_EXISTS);
         }
         
         Cloud cloud = new Cloud();
-        cloud.setId(user.getId());
+        cloud.setUser(user);  // 设置关联关系
         cloudRepository.save(cloud);
         
         log.info("成功为用户[{}]创建云盘", user.getUsername());
+    }
+
+    //注销云盘
+    public void deleteCloud(Long userId) {
+        log.debug("开始注销用户ID[{}]的云盘", userId);
+        cloudRepository.deleteById(userId);
+        log.info("成功注销用户ID[{}]的云盘", userId);
     }
 }

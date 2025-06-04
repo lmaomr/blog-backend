@@ -10,7 +10,7 @@ public class CustomException extends RuntimeException {
     private final String msg;
 
     public CustomException(ExceptionCodeMsg exceptionCodeMsg) {
-        super();
+        super();  // 传递消息给父类
         this.code = exceptionCodeMsg.getCode();
         this.msg = exceptionCodeMsg.getMsg();
     }

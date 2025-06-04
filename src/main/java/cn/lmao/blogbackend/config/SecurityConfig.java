@@ -39,12 +39,14 @@ public class SecurityConfig {
      * 安全过滤器链配置
      * @param http HttpSecurity 对象
      * @param jwtAuthenticationFilter JWT认证过滤器
+     * @param traceIdFilter TraceID过滤器
      * @return 配置好的 SecurityFilterChain
      * @throws Exception 配置异常
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, 
-            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            TraceIdFilter traceIdFilter) throws Exception {
         
         http
             // 禁用CSRF保护（因为使用JWT无状态认证）
@@ -66,6 +68,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             
+            // 添加TraceID过滤器（最先执行）
+            .addFilterBefore(traceIdFilter, UsernamePasswordAuthenticationFilter.class)
             // 添加JWT认证过滤器
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
