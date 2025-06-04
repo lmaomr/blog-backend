@@ -1,95 +1,117 @@
 package cn.lmao.blogbackend.util;
 
-import cn.lmao.blogbackend.model.entity.User;
-import cn.lmao.blogbackend.services.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.micrometer.common.util.StringUtils;
-
-import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * JWT工具类
+ * 用于处理JWT令牌的生成、验证和解析
+ */
 @Component
 public class JwtUtils {
     private final SecretKey key;
     private final long expiration;
     private static final String TOKEN_PREFIX = "Bearer ";
-    // 添加UserService依赖
-    private final UserService userService;
+    private final Logger log = LogUtils.getLogger();
 
+    /**
+     * 构造函数
+     * @param secretKey JWT密钥
+     * @param expiration 过期时间（毫秒）
+     */
     public JwtUtils(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration}") long expiration,
-            UserService userService) {  // 注入UserService
+            @Value("${jwt.expiration}") long expiration) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
         this.expiration = expiration;
-        this.userService = userService;  // 注入UserService
+        log.info("JwtUtils初始化完成，过期时间设置为: {}ms", expiration);
     }
 
+    /**
+     * 生成JWT令牌
+     * @param username 用户名
+     * @return JWT令牌字符串
+     */
     public String generateToken(String username) {
+        log.debug("开始为用户[{}]生成JWT令牌", username);
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
-        System.out.println("当前时间: " + new Date());
-        System.out.println("token过期时间: " + new Date(System.currentTimeMillis() + expiration));
-        return Jwts.builder()
+        Date now = new Date();
+        Date expiryDate = new Date(System.currentTimeMillis() + expiration);
+        
+        log.debug("令牌生成时间: {}, 过期时间: {}", now, expiryDate);
+        
+        String token = Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
                 .signWith(key)
                 .compact();
+                
+        log.debug("JWT令牌生成成功");
+        return token;
     }
 
-    public long getUserIdFromToken(String authHeader) {
-        String token = extractToken(authHeader);
+    /**
+     * 从令牌中获取用户名
+     * @param token JWT令牌
+     * @return 用户名
+     */
+    public String getUsernameFromToken(String token) {
+        log.debug("开始从令牌中解析用户名");
         String username = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .get("username", String.class);
-        if (StringUtils.isBlank(username)) {
-            throw new JwtException("Token中没有用户名");
-        }
-        System.out.println("提取的用户名: " + username);
-        User user = userService.getUserByName(username);
-        return user.getId();
-    }
-
-    public String extractToken(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith(TOKEN_PREFIX)) {
-            throw new JwtException("无效的Authorization头");
-        }
-        return authHeader.substring(TOKEN_PREFIX.length());
+        log.debug("成功从令牌中解析出用户名: {}", username);
+        return username;
     }
 
     /**
-     * 验证JWT Token的有效性
-     *
-     * @param authHeader 需要验证的JWT Token
-     * @return 如果Token有效返回true，否则返回false
+     * 从Authorization头中提取令牌
+     * @param authHeader Authorization头
+     * @return JWT令牌
+     * @throws JwtException 如果Authorization头格式无效
      */
-    public boolean validateToken(String authHeader) {
+    public String extractToken(String authHeader) {
+        log.debug("开始从Authorization头中提取令牌");
+        if (authHeader == null || !authHeader.startsWith(TOKEN_PREFIX)) {
+            log.warn("无效的Authorization头格式");
+            throw new JwtException("无效的Authorization头");
+        }
+        String token = authHeader.substring(TOKEN_PREFIX.length());
+        log.debug("成功从Authorization头中提取令牌");
+        return token;
+    }
+
+    /**
+     * 验证令牌是否有效
+     * @param token JWT令牌
+     * @return 如果令牌有效返回true，否则返回false
+     */
+    public boolean validateToken(String token) {
+        log.debug("开始验证令牌");
         try {
-            String token = extractToken(authHeader);
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            System.out.println("Token 验证成功");
+            log.debug("令牌验证成功");
             return true;
         } catch (ExpiredJwtException e) {
-            System.out.println("Token 已过期"); // 明确过期
+            log.warn("令牌已过期");
             return false;
         } catch (JwtException | IllegalArgumentException e) {
-            System.out.println("Token 无效: " + e.getMessage()); // 其他错误
+            log.warn("令牌无效: {}", e.getMessage());
             return false;
         }
     }
-
 }

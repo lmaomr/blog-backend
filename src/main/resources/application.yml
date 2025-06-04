@@ -25,9 +25,10 @@ spring:
 
   # JPA 配置
   jpa:
+    open-in-view: false
+    show-sql: true  # 是否显示 SQL 语句
     hibernate:
       ddl-auto: update  # 自动建表策略，可选值：none、validate、update、create、create-drop
-    show-sql: true  # 是否显示 SQL 语句
     properties:
       hibernate:
         format_sql: true  # 格式化 SQL 输出
@@ -105,3 +106,21 @@ jwt:
 #       root: WARN
 #     file:
 #       name: logs/prod-application.log
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    filter: true
+    disable-swagger-default-url: true
+    doc-expansion: none
+    default-models-expand-depth: -1
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  packages-to-scan: cn.lmao.blogbackend.controller
+  paths-to-match: /apis/**
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
