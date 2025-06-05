@@ -18,6 +18,7 @@ public enum ExceptionCodeMsg {
     PARAM_REQUIRED(400, "缺少必要参数"),
     PARAM_INVALID(400, "参数格式错误"),
     PARAM_TYPE_NOT_FOUND(400, "不支持该请求类型"),
+    PARAM_METHOD_NOT_FOUND(400, "不支持该请求方法"),
     PARAM_TYPE_MISMATCH(400, "参数类型不匹配"),
     REQUEST_BODY_INVALID(400, "请求体解析失败"),
     FILE_UPLOAD_FAILED(400, "文件上传失败"),
