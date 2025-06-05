@@ -11,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -60,6 +61,20 @@ public class GlobalExceptionHandler {
         return Response.exception(ExceptionCodeMsg.RESOURCE_NOT_FOUND);
     }
 
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public <T> Response<T> handleTypeNotSupportedException(
+            HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
+        String contentType = request.getContentType();
+        String mimeType = (contentType != null) ? contentType.split(";")[0] : "null";
+
+        log.warn("不支持此请求类型[traceId={}]: type={}, uri={}",
+                getTraceId(request),
+                mimeType, // 直接取 MIME 类型（如 "multipart/form-data"）
+                request.getRequestURI());
+
+        return Response.exception(ExceptionCodeMsg.PARAM_TYPE_NOT_FOUND);
+    }
+
     /**
      * 处理请求方法不支持异常
      */
@@ -69,7 +84,7 @@ public class GlobalExceptionHandler {
             HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
         log.warn("方法不支持 [traceId={}]: uri={}, supported={}",
                 getTraceId(request), request.getRequestURI(), e.getSupportedHttpMethods());
-        return Response.error(HttpStatus.METHOD_NOT_ALLOWED.value(), "不支持的请求方法");
+        return Response.exception(ExceptionCodeMsg.PARAM_METHOD_NOT_FOUND);
     }
 
     /**
@@ -192,13 +207,6 @@ public class GlobalExceptionHandler {
     // --- 工具方法 ---
 
     /**
-     * 获取请求追踪ID
-     */
-    private String getTraceId(HttpServletRequest request) {
-        return (String) request.getAttribute("traceId");
-    }
-
-    /**
      * 敏感信息脱敏处理
      */
     private String sanitize(String input) {
@@ -209,5 +217,12 @@ public class GlobalExceptionHandler {
         // 邮箱脱敏
         input = input.replaceAll("(\\w{2})[^@]*(@.*)", "$1****$2");
         return input;
+    }
+
+    /**
+     * 获取请求的追踪ID
+     */
+    private String getTraceId(HttpServletRequest request) {
+        return request.getHeader("X-Trace-Id");
     }
 }

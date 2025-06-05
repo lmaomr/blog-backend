@@ -29,7 +29,7 @@ public class SecurityConfig {
     // 公共路径常量
     private static final String[] PUBLIC_URLS = {
             "/apis/auth/**",
-            "/apis/**",
+            "*/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html"
